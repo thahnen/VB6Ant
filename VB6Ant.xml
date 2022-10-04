@@ -1,0 +1,173 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<project name="VB6Ant" default="vb6.help" xmlns:if="ant:if" xmlns:unless="ant:unless">
+    <description>
+        Visual Basic 6 (Classic) for Ant
+
+        TODO: Does not support /D or /cmd switches for compiling / running project!
+    </description>
+
+    <!-- environment variables to search for VB6.exe -->
+    <property environment="env" />
+
+
+
+    <!-- ===========================================================================================================
+                                                    MACRO DEFINITIONS
+         =========================================================================================================== -->
+
+
+
+    <!--
+        Check if a property is available and not empty
+
+        IN:     name        -> the property name
+    -->
+    <macrodef name="checkPropertyAvailable" description="Check if property is available and not empty">
+        <attribute name="name" />
+
+        <sequential>
+            <fail message="[${ant.project.name}] The property '@{name}' does not exist or is empty!">
+                <condition>
+                    <or>
+                        <not>
+                            <isset property="@{name}" />
+                        </not>
+                        <equals arg1="" arg2="@{name}" />
+                    </or>
+                </condition>
+            </fail>
+        </sequential>
+    </macrodef>
+
+
+    <!--
+        General macro to call VB6.EXE with arguments
+
+        IN:     args        -> command line arguments for the VB6.EXE
+    -->
+    <macrodef name="vb6" description="General macro to call VB6.EXE">
+        <attribute name="args" default="" />
+
+        <sequential>
+            <exec executable="cmd" failonerror="true">
+                <env key="PATH" value="${env.PATH}${VB6.path}" />
+                <arg line="/C VB6.EXE @{args}" />
+            </exec>
+        </sequential>
+    </macrodef>
+
+
+    <!--
+        Macro to compile a specific project
+
+        IN:     project     -> the full path to the project (excluding file suffix)
+                errorfile   -> the file to write the error message to if any appear
+                builddir    -> the output directory for the project
+    -->
+    <macrodef name="vb6.make" description="Macro to call VB6.EXE to compile a specific project">
+        <attribute name="project" />
+        <attribute name="errorfile" />
+        <attribute name="builddir" />
+
+        <sequential>
+            <vb6 args="/make @{project}.vbp /out @{errorfile} /outdir @{builddir}" />
+        </sequential>
+    </macrodef>
+
+
+    <!--
+        Macro to compile and run a specific project
+
+        IN:     project     -> the full path to the project (excluding file suffix)
+                errorfile   -> the file to write the error message to if any appear
+                builddir    -> the output directory for the project
+    -->
+    <macrodef name="vb6.run" description="Macro to call VB6.EXE to run a specific project">
+        <attribute name="project" />
+        <attribute name="errorfile" />
+        <attribute name="builddir" />
+
+        <sequential>
+            <vb6 args="/runexit @{project}.vbp /out @{errorfile} /outdir @{builddir}" />
+        </sequential>
+    </macrodef>
+
+
+
+    <!-- ===========================================================================================================
+                                                        MAIN TARGETS
+         =========================================================================================================== -->
+
+
+    <target name="vb6.init" description="Init Ant targets and check environment: OS / VB6.EXE">
+        <!-- i) fail if not Windows -->
+        <fail message="[${ant.project.name}] Only available for Windows NT operating systems!">
+            <condition>
+                <not>
+                    <os family="winnt" />
+                </not>
+            </condition>
+        </fail>
+
+        <!-- ii) check if VB6.EXE in ${env.PATH} & search for VB6.EXE (32 / 64-bit OS) -->
+        <condition property="VB6.missing">
+            <not>
+                <contains string="${env.PATH}" substring="VB6.EXE" />
+            </not>
+        </condition>
+
+        <condition property="VB6.path" value=":C\Program&#160;Files\Microsoft&#160;Visual&#160;Studio\VB98">
+            <and>
+                <isset property="VB6.missing" />
+                <available file="/Program&#160;Files/Microsoft&#160;Visual&#160;Studio/VB98/VB.EXE" type="file" />
+            </and>
+        </condition>
+
+        <condition property="VB6.path" value=":C:\Program&#160;Files&#160;(x86)\Microsoft&#160;Visual&#160;Studio\VB98">
+            <and>
+                <isset property="VB6.missing" />
+                <available file="/Program&#160;Files&#160;(x86)/Microsoft&#160;Visual&#160;Studio/VB98/VB.EXE"
+                           type="file" />
+            </and>
+        </condition>
+
+        <!-- iii) fail if nothing found regarding VB6.EXE -->
+        <fail message="[${ant.project.name}] VB6.EXE could neither be found in '${env.PATH}' or default directories!">
+            <condition>
+                <isset property="VB6.missing" />
+                <not>
+                    <isset property="VB6.path" />
+                </not>
+            </condition>
+        </fail>
+
+        <condition property="VB6.path" value="">
+            <not>
+                <isset property="VB6.path" />
+            </not>
+        </condition>
+    </target>
+
+
+    <target name="vb6.make" depends="vb6.init" description="">
+        <checkPropertyAvailable name="project" />
+        <checkPropertyAvailable name="error.file" />
+        <checkPropertyAvailable name="build.dir" />
+
+        <vb6.make project="${project}" errorfile="${error.file}" builddir="${build.dir}" />
+    </target>
+
+
+    <target name="vb6.run" depends="vb6.init" description="">
+        <checkPropertyAvailable name="project" />
+        <checkPropertyAvailable name="error.file" />
+        <checkPropertyAvailable name="build.dir" />
+
+        <vb6.run project="${project}" errorfile="${error.file}" builddir="${build.dir}" />
+    </target>
+
+
+    <target name="vb6.help" depends="vb6.init" description="Opens the helper window for Visual Basic 6!">
+        <vb6 args="/?" />
+    </target>
+</project>
