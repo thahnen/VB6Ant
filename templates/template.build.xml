@@ -1,0 +1,92 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<project name="##TPL_PROJECT_NAME##" default="" xmlns:if="ant:if" xmlns:unless="ant:unless">
+    <description description="##TPL_PROJECT_NAME## including test classes" />
+
+    <!-- directory of this Ant script -->
+    <dirname property="scripts.dir" file="${ant.file}" />
+    <property name="build.dir" value="${scripts.dir}/../build" />
+
+    <!-- import VB6Ant library -->
+    <import file="${scripts.dir}/VB6Ant/VB6Ant.xml" />
+
+
+    <target name="clean" description="Clean the complete repository">
+        <!-- delete all build results & generated pdf files -->
+        <delete dir="${build.dir}" />
+        <delete>
+            <fileset dir="${scripts.dir}/.." includes="**/*.pdf" />
+        </delete>
+    </target>
+
+
+    <target name="docs" description="Create PDF files from Microsoft Word documents">
+        <!-- create "build/docs" directory -->
+        <mkdir dir="${build.dir}/docs" />
+
+        <!-- convert the Microsoft Word documents to PDF -->
+    </target>
+
+
+    <target name="compile" description="Compile the executable">
+        <!-- create "build/out" directory -->
+        <mkdir dir="${build.dir}/out" />
+
+        <!-- run VB6 compiler -->
+        <antcall target="vb6.make">
+            <param name="project" value="${scripts.dir}/../${ant.project.name}" />
+            <param name="errorfile" value="${build.dir}/out/compile.log" />
+            <param name="builddir" value="${build.dir}/out" />
+        </antcall>
+    </target>
+
+
+    <target name="run" depends="compile" description="Run the executable">
+        <!-- create "build/exec_dir" directory -->
+        <mkdir dir="${build.dir}/exec_dir" />
+
+        <!-- run VB6 compiler -->
+        <antcall target="vb6.run">
+            <param name="project" value="${scripts.dir}/../${ant.project.name}" />
+            <param name="errorfile" value="${build.dir}/exec_dir/run.log" />
+            <param name="builddir" value="${build.dir}/exec_dir" />
+        </antcall>
+    </target>
+
+
+    <target name="compileTest" depends="compile" description="Compile the test executable">
+        <!-- create "build/test/out" directory -->
+        <mkdir dir="${build.dir}/test/out" />
+
+        <!-- run VB6 compiler -->
+        <antcall target="vb6.make">
+            <param name="project" value="${scripts.dir}/../test/${ant.project.name}_Test" />
+            <param name="errorfile" value="${build.dir}/test/out/compileTest.log" />
+            <param name="builddir" value="${build.dir}/test/out" />
+        </antcall>
+    </target>
+
+
+    <target name="runTest" depends="compileTest" description="Run the test executable">
+        <!-- create "build/test/exec_dir" directory -->
+        <mkdir dir="${build.dir}/test/exec_dir" />
+
+        <!-- run VB6 compiler -->
+        <antcall target="vb6.run">
+            <param name="project" value="${scripts.dir}/../test/${ant.project.name}_Test" />
+            <param name="errorfile" value="${build.dir}/test/exec_dir/runTest.log" />
+            <param name="builddir" value="${build.dir}/test/exec_dir" />
+        </antcall>
+    </target>
+
+
+    <target name="dist" depends="docs,runTest" description="Create a product distribution">
+        <!-- create "build/dist" directory -->
+        <mkdir dir="${build.dir}/dist" />
+
+        <!-- ZIP documentation & compiled executable -->
+        <zip destfile="${build.dir}/dist/${ant.project.name}.zip">
+            <zipfileset dir="${build.dir}/docs" includes="*.pdf" prefix="docs" />
+            <zipfileset dir="${build.dir}/out" excludes="*.log" prefix="distribution" />
+        </zip>
+    </target>
+</project>

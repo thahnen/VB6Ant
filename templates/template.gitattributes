@@ -1,0 +1,18 @@
+# VB6 filetypes
+*.vbp  eol=crlf
+*.vbw  eol=crlf
+*.vbg  eol=crlf
+*.frm  eol=crlf
+*.cls  eol=crlf
+*.ctl  eol=crlf
+*.bas  eol=crlf
+*.rc   eol=crlf
+*.docx eol=crlf
+
+# Binary files
+*.ico binary
+*.ICO binary
+*.res binary
+*.RES binary
+*.bmp binary
+*.BMP binary
