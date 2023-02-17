@@ -146,14 +146,14 @@
         <condition property="VB6.path" value=":C\Program&#160;Files\Microsoft&#160;Visual&#160;Studio\VB98">
             <and>
                 <isset property="VB6.missing" />
-                <available file="/Program&#160;Files/Microsoft&#160;Visual&#160;Studio/VB98/VB.EXE" type="file" />
+                <available file="/Program&#160;Files/Microsoft&#160;Visual&#160;Studio/VB98/VB6.EXE" type="file" />
             </and>
         </condition>
 
         <condition property="VB6.path" value=":C:\Program&#160;Files&#160;(x86)\Microsoft&#160;Visual&#160;Studio\VB98">
             <and>
                 <isset property="VB6.missing" />
-                <available file="/Program&#160;Files&#160;(x86)/Microsoft&#160;Visual&#160;Studio/VB98/VB.EXE"
+                <available file="/Program&#160;Files&#160;(x86)/Microsoft&#160;Visual&#160;Studio/VB98/VB6.EXE"
                            type="file" />
             </and>
         </condition>
