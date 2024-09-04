@@ -213,7 +213,6 @@
         <!-- create project directory (build / scripts / src / test) -->
         <mkdir dir="${baseDir}/${projectName}" />
         <mkdir dir="${baseDir}/${projectName}/build" />
-        <mkdir dir="${baseDir}/${projectName}/doc" />
         <mkdir dir="${baseDir}/${projectName}/scripts" />
         <mkdir dir="${baseDir}/${projectName}/src" />
         <mkdir dir="${baseDir}/${projectName}/src/Classes" />
@@ -221,11 +220,6 @@
         <mkdir dir="${baseDir}/${projectName}/src/Forms" />
         <mkdir dir="${baseDir}/${projectName}/src/Modules" />
         <mkdir dir="${baseDir}/${projectName}/src/Resources" />
-        <mkdir dir="${baseDir}/${projectName}/test/Classes" />
-        <mkdir dir="${baseDir}/${projectName}/test/Controls" />
-        <mkdir dir="${baseDir}/${projectName}/test/Forms" />
-        <mkdir dir="${baseDir}/${projectName}/test/Modules" />
-        <mkdir dir="${baseDir}/${projectName}/test/Resources" />
 
         <!-- create .gitattributes file (special file for handling Windows file endings) -->
         <loadfile property="gitattributes.file" srcfile="${scripts.dir}/templates/template.gitattributes" />

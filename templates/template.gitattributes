@@ -7,7 +7,6 @@
 *.ctl  eol=crlf
 *.bas  eol=crlf
 *.rc   eol=crlf
-*.docx eol=crlf
 
 # Binary files
 *.ico binary

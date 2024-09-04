@@ -1,5 +1,2 @@
 # build directory containing output
 build/
-
-# PDF files (from converting from Microsoft Word documents)
-*.pdf
