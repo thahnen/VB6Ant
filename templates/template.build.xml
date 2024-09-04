@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8" ?>
-<project name="##TPL_PROJECT_NAME##" default="" xmlns:if="ant:if" xmlns:unless="ant:unless">
-    <description description="##TPL_PROJECT_NAME## including test classes" />
+<project name="##TPL_PROJECT_NAME##" default="compile" xmlns:if="ant:if" xmlns:unless="ant:unless">
+    <description description="##TPL_PROJECT_NAME## without tests" />
 
     <!-- directory of this Ant script -->
     <dirname property="scripts.dir" file="${ant.file}" />
@@ -13,9 +13,6 @@
     <target name="clean" description="Clean the complete repository">
         <!-- delete all build results & generated pdf files -->
         <delete dir="${build.dir}" />
-        <delete>
-            <fileset dir="${scripts.dir}/.." includes="**/*.pdf" />
-        </delete>
     </target>
 
 
@@ -45,7 +42,7 @@
     </target>
 
 
-    <target name="dist" depends="docs,runTest" description="Create a product distribution">
+    <target name="dist" depends="compile" description="Create a product distribution">
         <!-- create "build/dist" directory -->
         <mkdir dir="${build.dir}/dist" />
 

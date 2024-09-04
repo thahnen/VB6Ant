@@ -1,2 +1,5 @@
-# build directory containing output
+# Worspace file that changes everytime the user works with the IDE
+*.vbw
+
+# Build directory containing all the outputs and logs
 build/

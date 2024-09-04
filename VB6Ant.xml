@@ -4,14 +4,12 @@
         Visual Basic 6 (Classic) for Ant
 
         TODO: Does not support /D or /cmd switches for compiling / running project!
-        TODO: Read version information from project file!
+        TODO: Read version information from project file (MajorVer, MinorVer, RevisionVer) as VBP is properties format!
+        TODO: When working on a project, check that VB6 isn't currently running!
     </description>
 
     <!-- directory of this Ant script -->
-    <dirname property="scripts.dir" file="${ant.file}" />
-
-    <!-- environment variables to search for VB6.exe -->
-    <property environment="env" />
+    <dirname property="VB6Ant.dir" file="${ant.file}" />
 
 
 
@@ -22,48 +20,23 @@
 
 
     <!--
-        Check if a property is available and not empty
+        Check if a property is available
 
         IN:     name        -> the property name
     -->
-    <macrodef name="checkPropertyAvailable" description="Check if property is available and not empty">
+    <macrodef name="checkPropertyAvailable" description="Check if property is available">
         <attribute name="name" />
 
         <sequential>
             <fail message="[${ant.project.name}] The property '@{name}' does not exist or is empty!">
                 <condition>
-                    <or>
-                        <not>
-                            <isset property="@{name}" />
-                        </not>
-                        <equals arg1="" arg2="@{name}" />
-                    </or>
+                    <not>
+                        <isset property="@{name}" />
+                    </not>
                 </condition>
             </fail>
         </sequential>
     </macrodef>
-
-
-    <!--
-        Script macro to replace specific templates in a file with values provided
-
-        IN:     file        -> the file to replace the templates in
-                projectname -> will replace "##TPL_PROJECT_NAME##"
-    -->
-    <scriptdef name="replaceTemplatesInFile" language="javascript" description="Script macro to replace templates">
-        <attribute name="file" />
-        <attribute name="projectname" />
-
-        <![CDATA[
-            var path = java.io.File(attributes.get("file")).toPath()
-            var content = java.nio.file.Files.readAllLines(path, java.nio.charset.Charset.forName("UTF-8));
-
-            // replace necessary templates: ##TPL_PROJECT_NAME## -> @{projectName}
-            content = content.replace("##TPL_PROJECT_NAME##", attributes.get("projectname));
-
-            java.nio.file.Files.writeString(path, content, java.nio.file.StandardOpenOption.WRITE);
-        ]]>
-    </scriptdef>
 
 
     <!--
@@ -75,9 +48,10 @@
         <attribute name="args" default="" />
 
         <sequential>
-            <exec executable="cmd" failonerror="true">
-                <env key="PATH" value="${env.PATH}${VB6.path}" />
-                <arg line="/C VB6.EXE @{args}" />
+            <exec executable="${VB6.path}\VB6.EXE"
+                  dir="${scripts.dir}/.."
+                  failonerror="true">
+                <arg line="@{args}" />
             </exec>
         </sequential>
     </macrodef>
@@ -136,61 +110,57 @@
             </condition>
         </fail>
 
-        <!-- ii) check if VB6.EXE in ${env.PATH} & search for VB6.EXE (32 / 64-bit OS) -->
-        <condition property="VB6.missing">
-            <not>
-                <contains string="${env.PATH}" substring="VB6.EXE" />
-            </not>
+        <!-- ii) check for VB6.EXE (32 / 64-bit OS) -->
+        <condition property="VB6.path" value="C:\Program Files\Microsoft Visual Studio\VB98">
+            <available file="C:\Program Files\Microsoft Visual Studio\VB98\VB6.EXE"
+                       type="file" />
         </condition>
 
-        <condition property="VB6.path" value=":C\Program&#160;Files\Microsoft&#160;Visual&#160;Studio\VB98">
-            <and>
-                <isset property="VB6.missing" />
-                <available file="/Program&#160;Files/Microsoft&#160;Visual&#160;Studio/VB98/VB6.EXE" type="file" />
-            </and>
-        </condition>
-
-        <condition property="VB6.path" value=":C:\Program&#160;Files&#160;(x86)\Microsoft&#160;Visual&#160;Studio\VB98">
-            <and>
-                <isset property="VB6.missing" />
-                <available file="/Program&#160;Files&#160;(x86)/Microsoft&#160;Visual&#160;Studio/VB98/VB6.EXE"
-                           type="file" />
-            </and>
+        <condition property="VB6.path" value="C:\Program Files (x86)\Microsoft Visual Studio\VB98">
+            <available file="C:\Program Files (x86)\Microsoft Visual Studio\VB98\VB6.EXE"
+                       type="file" />
         </condition>
 
         <!-- iii) fail if nothing found regarding VB6.EXE -->
-        <fail message="[${ant.project.name}] VB6.EXE could neither be found in '${env.PATH}' or default directories!">
+        <fail message="[${ant.project.name}] VB6.EXE could neither be found in default directories!">
             <condition>
-                <isset property="VB6.missing" />
                 <not>
                     <isset property="VB6.path" />
                 </not>
             </condition>
         </fail>
+        
+        <!-- iv) fail if ${scripts.dir} is not set -->
+        <fail message="[${ant.project.name}] Property 'scripts.dir' must be set for every project">
+            <condition>
+                <not>
+                    <isset property="scripts.dir" />
+                </not>
+            </condition>
+        </fail>
+    </target>
 
-        <condition property="VB6.path" value="">
-            <not>
-                <isset property="VB6.path" />
-            </not>
-        </condition>
+
+    <target name="vb6.open" depends="vb6.init" description="Target to open Visual Basic 6">
+        <vb6 />
     </target>
 
 
     <target name="vb6.make" depends="vb6.init" description="Target to make the VB6 project">
         <checkPropertyAvailable name="project" />
-        <checkPropertyAvailable name="error.file" />
-        <checkPropertyAvailable name="build.dir" />
+        <checkPropertyAvailable name="errorfile" />
+        <checkPropertyAvailable name="builddir" />
 
-        <vb6.make project="${project}" errorfile="${error.file}" builddir="${build.dir}" />
+        <vb6.make project="${project}" errorfile="${errorfile}" builddir="${builddir}" />
     </target>
 
 
     <target name="vb6.run" depends="vb6.init" description="Target to run the VB6 project">
         <checkPropertyAvailable name="project" />
-        <checkPropertyAvailable name="error.file" />
-        <checkPropertyAvailable name="build.dir" />
+        <checkPropertyAvailable name="errorfile" />
+        <checkPropertyAvailable name="builddir" />
 
-        <vb6.run project="${project}" errorfile="${error.file}" builddir="${build.dir}" />
+        <vb6.run project="${project}" errorfile="${errorfile}" builddir="${builddir}" />
     </target>
 
 
@@ -210,10 +180,11 @@
         <checkPropertyAvailable name="baseDir" />
         <checkPropertyAvailable name="projectName" />
 
-        <!-- create project directory (build / scripts / src / test) -->
+        <!-- create project directory (build / scripts / src) -->
         <mkdir dir="${baseDir}/${projectName}" />
         <mkdir dir="${baseDir}/${projectName}/build" />
         <mkdir dir="${baseDir}/${projectName}/scripts" />
+        <mkdir dir="${baseDir}/${projectName}/scripts/VB6Ant" />
         <mkdir dir="${baseDir}/${projectName}/src" />
         <mkdir dir="${baseDir}/${projectName}/src/Classes" />
         <mkdir dir="${baseDir}/${projectName}/src/Controls" />
@@ -221,33 +192,35 @@
         <mkdir dir="${baseDir}/${projectName}/src/Modules" />
         <mkdir dir="${baseDir}/${projectName}/src/Resources" />
 
-        <!-- create .gitattributes file (special file for handling Windows file endings) -->
-        <loadfile property="gitattributes.file" srcfile="${scripts.dir}/templates/template.gitattributes" />
-        <echo file="${baseDir}/${projectName}/.gitattributes" append="false" message="${gitattributes.file}" />
+        <!-- create .gitattributes file (special file for handling Windows line endings) -->
+        <copy file="${VB6Ant.dir}/templates/template.gitattributes" overwrite="false"
+              tofile="${baseDir}/${projectName}/.gitattributes" />
 
-        <!-- create .gitignore file (containing the build file, this repository) -->
-        <loadfile property="gitignore.file" srcfile="${scripts.dir}/templates/template.gitignore" />
-        <echo file="${baseDir}/${projectName}/.gitignore" append="false" message="${gitignore.file}" />
+        <!-- create .gitignore file (containing the build files) -->
+        <copy file="${VB6Ant.dir}/templates/template.gitignore" overwrite="false"
+              tofile="${baseDir}/${projectName}/.gitignore" />
 
         <!-- create README.md file (containing basic information about the project) -->
-        <loadfile property="README.md.file" srcfile="${scripts.dir}/templates/template.README.md" />
-        <echo file="${baseDir}/${projectName}/README.md" append="false" message="${README.md.file}" />
+        <copy file="${VB6Ant.dir}/templates/template.README.md" overwrite="false"
+              tofile="${baseDir}/${projectName}/README.md" />
+        <replace file="${baseDir}/${projectName}/README.md" token="##TPL_PROJECT_NAME##" value="${projectName}" />
 
         <!-- copy (templated) build.xml files and replace templates -->
-        <copy file="${scripts.dir}/templates/template.build.xml" overwrite="false"
+        <copy file="${VB6Ant.dir}/templates/template.build.xml" overwrite="false"
               tofile="${baseDir}/${projectName}/scripts/build.xml" />
-        <replaceTemplatesInFile file="${baseDir}/${projectName}/scripts/build.xml" projectname="${projectName}" />
+        <replace file="${baseDir}/${projectName}/scripts/build.xml" token="##TPL_PROJECT_NAME##" value="${projectName}" />
 
-        <!-- clone this repository into scripts as a Git submodule -->
-        <exec executable="cmd" dir="${baseDir}/${projectName}" failonerror="true">
-            <arg line="/C git submodule add https://github.com/thahnen/VB6Ant.git scripts/VB6Ant" />
-        </exec>
+        <!-- copy THIS "VB6Ant.xml into the project", user can replace it with the Git submodule -->
+        <copy file="${ant.file}" overwrite="false"
+              toFile="${baseDir}/${projectName}/scripts/VB6Ant/VB6Ant.xml" />
     </target>
 
 
-    <target name="vb6.project.check" description="Target to check a VB6 project directory">
+    <target name="vb6.project.update" description="Update 'VB6Ant.xml' copied into project">
         <checkPropertyAvailable name="projectDir" />
 
-        <!-- kommt noch ... -->
+        <!-- INFO: Will overwrite even when using the Git submodule, handle with caution! -->
+        <copy file="${ant.file}" overwrite="true"
+              toFile="${projectDir}/scripts/VB6Ant/VB6Ant.xml" />
     </target>
 </project>

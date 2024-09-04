@@ -8,6 +8,9 @@
 *.bas  eol=crlf
 *.rc   eol=crlf
 
+# Git
+*.gitmodules eol=crlf
+
 # Binary files
 *.ico binary
 *.ICO binary
