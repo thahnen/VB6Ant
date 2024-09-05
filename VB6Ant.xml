@@ -1,11 +1,9 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <project name="VB6Ant" default="vb6.help" xmlns:if="ant:if" xmlns:unless="ant:unless">
     <description>
-        Visual Basic 6 (Classic) for Ant
-
-        TODO: Does not support /D or /cmd switches for compiling / running project!
-        TODO: Read version information from project file (MajorVer, MinorVer, RevisionVer) as VBP is properties format!
-        TODO: When working on a project, check that VB6 isn't currently running!
+        "Build system" for Visual Basic 6 (Classic) that brings the development process of legacy
+        applications to the mordern era. Based on Apache Ant as the declarative build tool and the
+        uniform "Visual Basic 6 (Classic) project structure".
     </description>
 
     <!-- directory of this Ant script -->
@@ -13,9 +11,9 @@
 
 
 
-    <!-- ===========================================================================================================
-                                                    MACRO DEFINITIONS
-         =========================================================================================================== -->
+    <!-- ======================================================================================
+                                            MACRO DEFINITIONS
+         ====================================================================================== -->
 
 
 
@@ -28,7 +26,7 @@
         <attribute name="name" />
 
         <sequential>
-            <fail message="[${ant.project.name}] The property '@{name}' does not exist or is empty!">
+            <fail message="[${ant.project.name}] The property '@{name}' does not exist!">
                 <condition>
                     <not>
                         <isset property="@{name}" />
@@ -40,7 +38,7 @@
 
 
     <!--
-        General macro to call VB6.EXE with arguments
+        General macro to call VB6.EXE with command line arguments
 
         IN:     args        -> command line arguments for the VB6.EXE
     -->
@@ -50,9 +48,17 @@
         <sequential>
             <exec executable="${VB6.path}\VB6.EXE"
                   dir="${scripts.dir}/.."
-                  failonerror="true">
+                  resultproperty="exit.code">
                 <arg line="@{args}" />
             </exec>
+
+            <fail message="[${ant.project.name}] Running VB6 does not work when currently opened!">
+                <condition>
+                    <not>
+                        <equals arg1="0" arg2="${exit.code}" />
+                    </not>
+                </condition>
+            </fail>
         </sequential>
     </macrodef>
 
@@ -88,20 +94,48 @@
         <attribute name="builddir" />
 
         <sequential>
-            <vb6 args="/runexit @{project}.vbp /out @{errorfile} /outdir @{builddir}" />
+            <vb6.make project="@{project}" errorfile="@{errorfile}" builddir="@{builddir}" />
+            <basename property="out.file" file="@{project}" />
+            <exec executable="${builddir}/${out.file}.exe" dir="@{builddir}" />
+        </sequential>
+    </macrodef>
+
+
+    <!--
+        Macro to read the properties of a specific Visual Basic 6 project
+
+        IN:     project     -> the full path to the project (excluding file suffix)
+        OUT:    properties  -> all the entries in the project file
+    -->
+    <macrodef name="vb6.properties" description="Read the VB6 project properties">
+        <attribute name="project" />
+
+        <sequential>
+            <property file="@{project}.vbp" />
         </sequential>
     </macrodef>
 
 
 
-    <!-- ===========================================================================================================
-                                                        MAIN TARGETS
-         =========================================================================================================== -->
+    <!-- ======================================================================================
+                                            MAIN TARGETS
+         ====================================================================================== -->
 
 
 
-    <target name="vb6.init" description="Init Ant targets and check environment: OS / VB6.EXE">
-        <!-- i) fail if not Windows -->
+    <target name="ant.init" description="Check that requred Ant property is available">
+        <fail message="[${ant.project.name}] Property 'scripts.dir' must be set for every project">
+            <condition>
+                <not>
+                    <isset property="scripts.dir" />
+                </not>
+            </condition>
+        </fail>
+    </target>
+
+
+    <target name="vb6.init" description="Check that OS matches Windoes and VB6.EXE is available">
+        <!-- i) check for Windows NT -->
         <fail message="[${ant.project.name}] Only available for Windows NT operating systems!">
             <condition>
                 <not>
@@ -122,31 +156,27 @@
         </condition>
 
         <!-- iii) fail if nothing found regarding VB6.EXE -->
-        <fail message="[${ant.project.name}] VB6.EXE could neither be found in default directories!">
+        <fail message="[${ant.project.name}] VB6.EXE could not be found in default directories!">
             <condition>
                 <not>
                     <isset property="VB6.path" />
                 </not>
             </condition>
         </fail>
-        
-        <!-- iv) fail if ${scripts.dir} is not set -->
-        <fail message="[${ant.project.name}] Property 'scripts.dir' must be set for every project">
-            <condition>
-                <not>
-                    <isset property="scripts.dir" />
-                </not>
-            </condition>
-        </fail>
     </target>
 
 
-    <target name="vb6.open" depends="vb6.init" description="Target to open Visual Basic 6">
+    <target name="vb6.open" depends="vb6.init" description="Open the Visual Basic 6 IDE">
         <vb6 />
     </target>
 
 
-    <target name="vb6.make" depends="vb6.init" description="Target to make the VB6 project">
+    <target name="vb6.help" depends="vb6.init" description="Show the help window">
+        <vb6 args="/?" />
+    </target>
+
+
+    <target name="vb6.make" depends="ant.init,vb6.init" description="Build the project">
         <checkPropertyAvailable name="project" />
         <checkPropertyAvailable name="errorfile" />
         <checkPropertyAvailable name="builddir" />
@@ -155,7 +185,7 @@
     </target>
 
 
-    <target name="vb6.run" depends="vb6.init" description="Target to run the VB6 project">
+    <target name="vb6.run" depends="ant.init,vb6.init" description="Run the project">
         <checkPropertyAvailable name="project" />
         <checkPropertyAvailable name="errorfile" />
         <checkPropertyAvailable name="builddir" />
@@ -164,15 +194,10 @@
     </target>
 
 
-    <target name="vb6.help" depends="vb6.init" description="Opens the helper window for Visual Basic 6!">
-        <vb6 args="/?" />
-    </target>
 
-
-
-    <!-- ===========================================================================================================
-                                                    VB6 PROJECT TARGETS
-         =========================================================================================================== -->
+    <!-- ======================================================================================
+                                        VB6 PROJECT TARGETS
+         ====================================================================================== -->
 
 
 
@@ -203,14 +228,18 @@
         <!-- create README.md file (containing basic information about the project) -->
         <copy file="${VB6Ant.dir}/templates/template.README.md" overwrite="false"
               tofile="${baseDir}/${projectName}/README.md" />
-        <replace file="${baseDir}/${projectName}/README.md" token="##TPL_PROJECT_NAME##" value="${projectName}" />
+        <replace file="${baseDir}/${projectName}/README.md"
+                 token="##TPL_PROJECT_NAME##"
+                 value="${projectName}" />
 
         <!-- copy (templated) build.xml files and replace templates -->
         <copy file="${VB6Ant.dir}/templates/template.build.xml" overwrite="false"
               tofile="${baseDir}/${projectName}/scripts/build.xml" />
-        <replace file="${baseDir}/${projectName}/scripts/build.xml" token="##TPL_PROJECT_NAME##" value="${projectName}" />
+        <replace file="${baseDir}/${projectName}/scripts/build.xml"
+                 token="##TPL_PROJECT_NAME##"
+                 value="${projectName}" />
 
-        <!-- copy THIS "VB6Ant.xml into the project", user can replace it with the Git submodule -->
+        <!-- copy THIS library into the project, user can replace it with the Git submodule -->
         <copy file="${ant.file}" overwrite="false"
               toFile="${baseDir}/${projectName}/scripts/VB6Ant/VB6Ant.xml" />
     </target>

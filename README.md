@@ -1,15 +1,26 @@
 # VB6Ant
 
-Visual Basic 6 (Classic) for Ant
+"Build system" for Visual Basic 6 (Classic) that brings the development process of legacy
+applications to the mordern era. Based on Apache Ant as the declarative build tool and the uniform
+"Visual Basic 6 (Classic) project structure".
 
-## VB6Ant.xml
+## Visual Basic 6 (Classic) project structure
 
-Ant library containing necessary macros and targets to invoke the VB6.EXE (Visual Basic 6 IDE /
-compiler) from Ant.
+This uniform directory structure is used to keep all the projects the same and have a better user
+experience when working on it directly and with this "build system". The structure is as follows:
 
-## templates
-
-Directory containing template for generating new projects.
+```
+\                           -> includes the project definition, a README.md and Git-related files
+\build\                     -> containing all the build artifact, excluded from Git
+\scripts\build.xml          -> the actual Ant build script, generated from this library intially
+\scripts\VB6Ant\VB6Ant.xml  -> this very library, currently not supporting Git submodules
+\src\
+  Classes\                  -> contains Class Modules ("*.cls")
+  Controls\                 -> contains User Controls ("*.ctl")
+  Forms\                    -> contains Forms ("*.frm")
+  Modules\                  -> contains Modules ("*.bas")
+  Resources\                -> contains project related resources like icons or other assets
+```
 
 ## Ant "commands" usable from the library
 
@@ -25,9 +36,12 @@ the following command:
 ant -buildfile VB6Ant.xml "vb6.project.create" -DbaseDir=C:\Users\thahn\source\repos -DprojectName=TestProject
 ```
 
+It uses the resources located in the *templates* directory to create the structure of the new
+project. It is intended to work with Git out of the box.
+
 ### Update Ant library
 
-In order to update the Ant library that is copied to each project, run the following comman:
+In order to update the Ant library that is copied to each project, run the following command:
 
 ```shell
 ant -buildfile VB6Ant.xml "vb6.project.update" -DprojectDir=C:\Users\thahn\source\repos\TestProject

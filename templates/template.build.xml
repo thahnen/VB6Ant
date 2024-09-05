@@ -46,8 +46,10 @@
         <!-- create "build/dist" directory -->
         <mkdir dir="${build.dir}/dist" />
 
+        <vb6.properties project="${scripts.dir}/../${ant.project.name}" />
+
         <!-- ZIP documentation & compiled executable -->
-        <zip destfile="${build.dir}/dist/${ant.project.name}.zip">
+        <zip destfile="${build.dir}/dist/${ant.project.name}_${MajorVer}.${MinorVer}.${RevisionVer}.zip">
             <zipfileset dir="${build.dir}/out" excludes="*.log" prefix="distribution" />
         </zip>
     </target>
