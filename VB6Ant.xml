@@ -252,4 +252,40 @@
         <copy file="${ant.file}" overwrite="true"
               toFile="${projectDir}/scripts/VB6Ant/VB6Ant.xml" />
     </target>
+
+
+    <target name="vb6.project.sonar" description="Onboard project into SonarCloud">
+        <checkPropertyAvailable name="projectDir" />
+        <checkPropertyAvailable name="organization" />
+        <checkPropertyAvailable name="token" />
+
+        <basename property="projectName" file="${projectDir}" />
+
+        <property name="sonar-project.properties"
+                  value="${projectDir}/sonar-project.properties" />
+        <property name=".sonar-project.properties"
+                  value="${projectDir}/.sonar-project.properties" />
+        <vb6.properties project="${projectDir}/${projectName}" />
+
+        <!-- copy (templated) Sonar properties and replace templates -->
+        <copy file="${VB6Ant.dir}/templates/template.sonar-project.properties" overwrite="true"
+              toFile="${sonar-project.properties}" />
+        <replace file="${sonar-project.properties}"
+                 token="##TPL_ORGANIZATION##"
+                 value="${organization}" />
+        <replace file="${sonar-project.properties}"
+                 token="##TPL_PROJECT_KEY##"
+                 value="${VersionCompanyName}:${projectName}" />
+        <replace file="${sonar-project.properties}"
+                 token="##TPL_PROJECT_NAME##"
+                 value="${projectName}" />
+        <replaceregexp file="${sonar-project.properties}"
+                       match="&quot;"
+                       replace=""
+                       flags="g"/>
+
+        <!-- create file containing token to SonarCloud -->
+        <echo file="${.sonar-project.properties}"
+              message="sonar.token=${token}" />
+    </target>
 </project>

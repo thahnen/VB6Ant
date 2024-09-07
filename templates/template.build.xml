@@ -50,7 +50,24 @@
 
         <!-- ZIP documentation & compiled executable -->
         <zip destfile="${build.dir}/dist/${ant.project.name}_${MajorVer}.${MinorVer}.${RevisionVer}.zip">
-            <zipfileset dir="${build.dir}/out" excludes="*.log" prefix="distribution" />
+            <zipfileset dir="${build.dir}/out" excludes="*.log" />
         </zip>
+    </target>
+
+
+    <target name="sonar" description="Run SonarCloud analysis for this project">
+        <!-- create "build/SonarCloud" directory -->
+        <mkdir dir="${build.dir}/SonarCloud" />
+
+        <property file="${scripts.dir}/../.sonar-project.properties" />
+        <vb6.properties project="${scripts.dir}/../${ant.project.name}" />
+
+        <!-- run Sonar Scanner CLI against SonarCloud -->
+        <exec executable="sonar-scanner.bat"
+                  dir="${scripts.dir}/.."
+                  searchpath="true">
+                <arg value="-Dsonar.token=${sonar.token}" />
+                <arg value="-Dsonar.projectVersion=${MajorVer}.${MinorVer}.${RevisionVer}" />
+            </exec>
     </target>
 </project>

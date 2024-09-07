@@ -21,3 +21,10 @@ To create the distribution run from this base directory the following command:
 ```shell
 ant -buildfile scripts/build.xml dist
 ```
+
+To run the SonarCloud analysis, only available after onboarded, run from this
+base directory the following command:
+
+```shell
+ant -buildFile scripts/build.xml sonar
+```

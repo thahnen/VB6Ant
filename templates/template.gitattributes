@@ -12,6 +12,8 @@
 *.gitmodules eol=crlf
 
 # Binary files
+*.frx binary
+*.FRX binary
 *.ico binary
 *.ICO binary
 *.res binary

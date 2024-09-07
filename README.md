@@ -17,7 +17,7 @@ experience when working on it directly and with this "build system". The structu
 \src\
   Classes\                  -> contains Class Modules ("*.cls")
   Controls\                 -> contains User Controls ("*.ctl")
-  Forms\                    -> contains Forms ("*.frm")
+  Forms\                    -> contains Forms ("*.frm" and their resources "*.frx")
   Modules\                  -> contains Modules ("*.bas")
   Resources\                -> contains project related resources like icons or other assets
 ```
@@ -33,7 +33,8 @@ To create the project structure from scratch or re-create files/folders after de
 the following command:
 
 ```shell
-ant -buildfile VB6Ant.xml "vb6.project.create" -DbaseDir=C:\Users\thahn\source\repos -DprojectName=TestProject
+ant -buildfile VB6Ant.xml "vb6.project.create"
+  -DbaseDir=C:\Users\thahn\source\repos -DprojectName=TestProject
 ```
 
 It uses the resources located in the *templates* directory to create the structure of the new
@@ -44,5 +45,18 @@ project. It is intended to work with Git out of the box.
 In order to update the Ant library that is copied to each project, run the following command:
 
 ```shell
-ant -buildfile VB6Ant.xml "vb6.project.update" -DprojectDir=C:\Users\thahn\source\repos\TestProject
+ant -buildfile VB6Ant.xml "vb6.project.update"
+  -DprojectDir=C:\Users\thahn\source\repos\TestProject
+```
+
+### Onboard SonarCloud
+
+In order to onboard the project to SonarCloud with all the necessary properties, run the following
+command:
+
+```shell
+ant -buildfile VB6Ant.xml "vb6.project.sonar"
+  -DprojectDir=C:\Users\thahn\source\repos\TestProject
+  -Dorganization=SonarCloudOrganization
+  -Dtoken=SonarCloudToken
 ```

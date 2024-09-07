@@ -3,3 +3,6 @@
 
 # Build directory containing all the outputs and logs
 build/
+
+# Sonar Scanner
+.sonar-project.properties
