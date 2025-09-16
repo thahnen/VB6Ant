@@ -49,14 +49,14 @@ ant -buildfile VB6Ant.xml "vb6.project.update"
   -DprojectDir=C:\Users\thahn\source\repos\TestProject
 ```
 
-### Onboard SonarCloud
+### Onboard SonarQube Cloud
 
-In order to onboard the project to SonarCloud with all the necessary properties, run the following
-command:
+In order to onboard the project to SonarQube Cloud with all the necessary properties, run the
+following command:
 
 ```shell
 ant -buildfile VB6Ant.xml "vb6.project.sonar"
   -DprojectDir=C:\Users\thahn\source\repos\TestProject
-  -Dorganization=SonarCloudOrganization
-  -Dtoken=SonarCloudToken
+  -Dorganization=SonarQubeCloudOrganization
+  -Dtoken=SonarQubeCloudToken
 ```

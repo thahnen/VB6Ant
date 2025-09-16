@@ -254,7 +254,7 @@
     </target>
 
 
-    <target name="vb6.project.sonar" description="Onboard project into SonarCloud">
+    <target name="vb6.project.sonar" description="Onboard project into SonarQube Cloud">
         <checkPropertyAvailable name="projectDir" />
         <checkPropertyAvailable name="organization" />
         <checkPropertyAvailable name="token" />
@@ -284,7 +284,7 @@
                        replace=""
                        flags="g"/>
 
-        <!-- create file containing token to SonarCloud -->
+        <!-- create file containing token to SonarQube Cloud -->
         <echo file="${.sonar-project.properties}"
               message="sonar.token=${token}" />
     </target>

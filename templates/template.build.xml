@@ -55,14 +55,14 @@
     </target>
 
 
-    <target name="sonar" description="Run SonarCloud analysis for this project">
-        <!-- create "build/SonarCloud" directory -->
-        <mkdir dir="${build.dir}/SonarCloud" />
+    <target name="sonar" description="Run SonarQube Cloud analysis for this project">
+        <!-- create "build/SonarQubeCloud" directory -->
+        <mkdir dir="${build.dir}/SonarQubeCloud" />
 
         <property file="${scripts.dir}/../.sonar-project.properties" />
         <vb6.properties project="${scripts.dir}/../${ant.project.name}" />
 
-        <!-- run Sonar Scanner CLI against SonarCloud -->
+        <!-- run Sonar Scanner CLI against SonarQube Cloud -->
         <exec executable="sonar-scanner.bat"
                   dir="${scripts.dir}/.."
                   searchpath="true">

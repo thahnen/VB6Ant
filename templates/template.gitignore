@@ -4,5 +4,5 @@
 # Build directory containing all the outputs and logs
 build/
 
-# Sonar Scanner
+# SonarQube Cloud Scanner (hidden file)
 .sonar-project.properties
