@@ -9,6 +9,7 @@
 *.rc   eol=crlf
 
 # Git
+*.gitignore eol=crlf
 *.gitmodules eol=crlf
 
 # Binary files
