@@ -290,6 +290,7 @@ sonar.exclusions=src/Resources/*,**/*.frx
                searchpath="true">
             <arg value="submodule" />
             <arg value="add" />
+            <arg value="--force" />
             <arg value="https://github.com/thahnen/VB6Ant" />
             <arg value="scripts/VB6Ant" />
         </exec>
