@@ -16,35 +16,22 @@ experience when working on it directly and with this "build system". The structu
 \scripts\VB6Ant\VB6Ant.xml  -> this very library, currently not supporting Git submodules
 \src\
   Classes\                  -> contains Class Modules ("*.cls")
-  Controls\                 -> contains User Controls ("*.ctl")
+  Controls\                 -> contains User Controls ("*.ctl" and their resources "*.ctx")
   Forms\                    -> contains Forms ("*.frm" and their resources "*.frx")
   Modules\                  -> contains Modules ("*.bas")
   Resources\                -> contains project related resources like icons or other assets
 ```
 
-## Ant "commands" usable from the library
-
-The library itself does not only provide tasks to be used by Ant projects linked to Visual Basic 6
-but also some "commands" that can be used in order to interact with those projects.
-
-### Create project structure
+## Create project structure
 
 To create the project structure from scratch or re-create files/folders after deleting them, run
-the following command:
+the following command on this very library from wherever in the file system:
 
 ```shell
 ant -buildfile VB6Ant.xml "vb6.project.create"
   -DbaseDir=C:\Users\thahn\source\repos -DprojectName=TestProject
 ```
 
-It uses the resources located in the *templates* directory to create the structure of the new
-project. It is intended to work with Git out of the box.
-
-### Update Ant library
-
-In order to update the Ant library that is copied to each project, run the following command:
-
-```shell
-ant -buildfile VB6Ant.xml "vb6.project.update"
-  -DprojectDir=C:\Users\thahn\source\repos\TestProject
-```
+It uses the templated `build.xml` located in the *templates* directory to create the structure of
+the new project.
+This library is then added as a Git Submodule inside the `scripts\VB6Ant` directory.

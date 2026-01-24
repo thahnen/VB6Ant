@@ -3,7 +3,6 @@
     <dirname property="scripts.dir" file="${ant.file}" />
     <property name="build.dir" value="${scripts.dir}/../build" />
 
-    <!-- import VB6Ant library -->
     <import file="${scripts.dir}/VB6Ant/VB6Ant.xml" />
 
 
@@ -41,10 +40,10 @@
         <vb6.properties project="${scripts.dir}/../${ant.project.name}" />
 
         <exec executable="sonar-scanner.bat"
-                  dir="${scripts.dir}/.."
-                  searchpath="true">
-                <arg value="-Dsonar.token=${sonar.token}" />
-                <arg value="-Dsonar.projectVersion=${MajorVer}.${MinorVer}.${RevisionVer}" />
-            </exec>
+              dir="${scripts.dir}/.."
+              searchpath="true">
+            <arg value="-Dsonar.token=${sonar.token}" />
+            <arg value="-Dsonar.projectVersion=${MajorVer}.${MinorVer}.${RevisionVer}" />
+        </exec>
     </target>
 </project>
