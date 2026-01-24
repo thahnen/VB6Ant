@@ -48,15 +48,3 @@ In order to update the Ant library that is copied to each project, run the follo
 ant -buildfile VB6Ant.xml "vb6.project.update"
   -DprojectDir=C:\Users\thahn\source\repos\TestProject
 ```
-
-### Onboard SonarQube Cloud
-
-In order to onboard the project to SonarQube Cloud with all the necessary properties, run the
-following command:
-
-```shell
-ant -buildfile VB6Ant.xml "vb6.project.sonar"
-  -DprojectDir=C:\Users\thahn\source\repos\TestProject
-  -Dorganization=SonarQubeCloudOrganization
-  -Dtoken=SonarQubeCloudToken
-```

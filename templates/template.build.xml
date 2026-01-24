@@ -1,8 +1,5 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <project name="##TPL_PROJECT_NAME##" default="compile" xmlns:if="ant:if" xmlns:unless="ant:unless">
-    <description description="##TPL_PROJECT_NAME## without tests" />
-
-    <!-- directory of this Ant script -->
     <dirname property="scripts.dir" file="${ant.file}" />
     <property name="build.dir" value="${scripts.dir}/../build" />
 
@@ -11,16 +8,13 @@
 
 
     <target name="clean" description="Clean the complete repository">
-        <!-- delete all build results & generated pdf files -->
         <delete dir="${build.dir}" />
     </target>
 
 
     <target name="compile" description="Compile the executable">
-        <!-- create "build/out" directory -->
         <mkdir dir="${build.dir}/out" />
 
-        <!-- run VB6 compiler -->
         <antcall target="vb6.make">
             <param name="project" value="${scripts.dir}/../${ant.project.name}" />
             <param name="errorfile" value="${build.dir}/out/compile.log" />
@@ -30,10 +24,8 @@
 
 
     <target name="run" depends="compile" description="Run the executable">
-        <!-- create "build/exec_dir" directory -->
         <mkdir dir="${build.dir}/exec_dir" />
 
-        <!-- run VB6 compiler -->
         <antcall target="vb6.run">
             <param name="project" value="${scripts.dir}/../${ant.project.name}" />
             <param name="errorfile" value="${build.dir}/exec_dir/run.log" />
@@ -42,27 +34,12 @@
     </target>
 
 
-    <target name="dist" depends="compile" description="Create a product distribution">
-        <!-- create "build/dist" directory -->
-        <mkdir dir="${build.dir}/dist" />
-
-        <vb6.properties project="${scripts.dir}/../${ant.project.name}" />
-
-        <!-- ZIP documentation & compiled executable -->
-        <zip destfile="${build.dir}/dist/${ant.project.name}_${MajorVer}.${MinorVer}.${RevisionVer}.zip">
-            <zipfileset dir="${build.dir}/out" excludes="*.log" />
-        </zip>
-    </target>
-
-
     <target name="sonar" description="Run SonarQube Cloud analysis for this project">
-        <!-- create "build/SonarQubeCloud" directory -->
         <mkdir dir="${build.dir}/SonarQubeCloud" />
 
         <property file="${scripts.dir}/../.sonar-project.properties" />
         <vb6.properties project="${scripts.dir}/../${ant.project.name}" />
 
-        <!-- run Sonar Scanner CLI against SonarQube Cloud -->
         <exec executable="sonar-scanner.bat"
                   dir="${scripts.dir}/.."
                   searchpath="true">
